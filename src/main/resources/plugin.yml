@@ -1,0 +1,6 @@
+name: WeatherManager
+version: '1.0'
+main: com.thenylox.weatherManager.WeatherManager
+api-version: '1.21'
+authors: [ TheNylox ]
+softdepend: [PlaceholderAPI]

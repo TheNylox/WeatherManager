@@ -1,0 +1,40 @@
+##################################
+###   Weather Manager Config   ###
+##################################
+
+# List of worlds to manage weather in
+worlds:
+  - "world"
+  - "world_nether"
+  - "world_the_end"
+  - "my_custom_world"
+
+# The default world must be also contained in 'worlds'. This is just for code-purpose, keep it with your default world.
+default_world: "world"
+
+# Time in seconds between weather rolls (default is 10 minutes)
+weather_roll_timer: 10
+
+# Weather types and their probabilities in %
+clear_change_chance: 50
+rain_change_chance: 30
+thunder_change_chance: 20
+
+# Weather types and their %. Every group must sum to 100. So every clear, rain, and thunder must sum to 100.
+clear_to_rain_chance: 50
+clear_to_thunder_chanche: 50
+
+rain_to_clear_chance: 50
+rain_to_thunder_chance: 50
+
+thunder_to_clear_chance: 50
+thunder_to_rain_chance: 50
+
+# Choose if the plugin should send broadcast messages when weather changes
+broadcast_enabled: true
+
+# The message to broadcast when the weather changes (use %weather% to include the weather type)
+broadcast_message: "Weather has changed to %weather%"
+
+# Enable or disable the use of PAPI (PlaceholderAPI) for weather placeholders
+enable_papi: true
