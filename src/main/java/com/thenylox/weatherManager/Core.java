@@ -3,8 +3,9 @@ package com.thenylox.weatherManager;
 import com.thenylox.weatherManager.Model.Enum.WeatherStatus;
 import com.thenylox.weatherManager.Model.WeatherConfiguration;
 import com.thenylox.weatherManager.Runnable.WeatherRunnable;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -16,24 +17,24 @@ import java.util.List;
 import static com.thenylox.weatherManager.Model.Enum.WeatherStatus.*;
 
 public class Core {
-    private WeatherManager PLUGIN;
-    private ArrayList<World> worlds = new ArrayList<>();
-    private YamlConfiguration config;
-    private WeatherConfiguration weatherConfiguration = new WeatherConfiguration();
-    private World defaultWorld;
+    private final WeatherManager plugin;
+    private final ArrayList<World> worlds = new ArrayList<>();
+    private final YamlConfiguration config;
+    private final WeatherConfiguration weatherConfiguration = new WeatherConfiguration();
+    private final World defaultWorld;
 
-    public Core(WeatherManager PLUGIN, File configFile) {
-        this.PLUGIN = PLUGIN;
+    public Core(WeatherManager plugin, File configFile) {
+        this.plugin = plugin;
         this.config = YamlConfiguration.loadConfiguration(configFile);
-        this.weatherConfiguration.DefaultWorldName = config.getString("default_world");
+        this.weatherConfiguration.defaultWorldName = config.getString("default_world");
         loadWorldsFromConfig();
-        this.defaultWorld = Bukkit.getWorld(weatherConfiguration.DefaultWorldName);
-        this.weatherConfiguration.Worlds = worlds;
+        this.defaultWorld = Bukkit.getWorld(weatherConfiguration.defaultWorldName);
+        this.weatherConfiguration.worlds = worlds;
     }
 
     public void systemStart(){
-        IgniteCheck();
-        PopulateWeatherConfiguration();
+        igniteCheck();
+        populateWeatherConfiguration();
         startWeatherRunnable();
     }
 
@@ -50,7 +51,7 @@ public class Core {
     }
 
     private void startWeatherRunnable(){
-        Bukkit.getScheduler().runTaskTimerAsynchronously(PLUGIN, new WeatherRunnable(weatherConfiguration, PLUGIN), 20L, 20L * 60 * weatherConfiguration.WeatherRollTimer);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, new WeatherRunnable(weatherConfiguration, plugin), 20L, 20L * 60 * weatherConfiguration.weatherRollTimer);
     }
 
     private void loadWorldsFromConfig() {
@@ -60,32 +61,36 @@ public class Core {
             if (world != null) {
                 worlds.add(world);
             } else {
-                PLUGIN.getLogger().warning("[WeatherManager] World not found: " + worldName);
+                plugin.getLogger().warning("[WeatherManager] World not found: " + worldName);
             }
         }
     }
-    private void IgniteCheck(){
-        if (worlds.size() == 0) {
-            System.out.println(ChatColor.RED + "[RainMutiplier] No worlds found in the configuration file.");
+    private void igniteCheck(){
+        if (worlds.isEmpty()) {
+            System.out.println(
+                    Component.text("[RainMutiplier] No worlds found in the configuration file.", NamedTextColor.RED)
+            );
         }
 
-        if(defaultWorld == null){
-            System.out.println(ChatColor.RED + "[RainMutiplier] Default world");
+        if (defaultWorld == null) {
+            System.out.println(
+                    Component.text("[RainMutiplier] Default world", NamedTextColor.RED)
+            );
         }
     }
-    private void PopulateWeatherConfiguration() {
-        weatherConfiguration.WeatherStatus = getCurrentWeatherStatus();
-        weatherConfiguration.WeatherRollTimer = config.getInt("weather_roll_timer");
-        weatherConfiguration.IsBroadcastEnabled = config.getBoolean("broadcast_enabled");
-        weatherConfiguration.BroadcastMessage = config.getString("broadcast_message");
-        weatherConfiguration.ClearChangeChance = config.getInt("clear_change_chance");
-        weatherConfiguration.RainChangeChance = config.getInt("rain_change_chance");
-        weatherConfiguration.ThunderChangeChance = config.getInt("thunder_change_chance");
-        weatherConfiguration.ClearToRainChance = config.getInt("clear_to_rain_chance");
-        weatherConfiguration.ClearToThunderChance = config.getInt("clear_to_thunder_chance");
-        weatherConfiguration.RainToClearChance = config.getInt("rain_to_clear_chance");
-        weatherConfiguration.RainToThunderChance = config.getInt("rain_to_thunder_chance");
-        weatherConfiguration.ThunderToClearChance = config.getInt("thunder_to_clear_chance");
-        weatherConfiguration.ThunderToRainChance = config.getInt("thunder_to_rain_chance");
+    private void populateWeatherConfiguration() {
+        weatherConfiguration.weatherStatus = getCurrentWeatherStatus();
+        weatherConfiguration.weatherRollTimer = config.getInt("weather_roll_timer");
+        weatherConfiguration.isBroadcastEnabled = config.getBoolean("broadcast_enabled");
+        weatherConfiguration.broadcastMessage = config.getString("broadcast_message");
+        weatherConfiguration.clearChangeChance = config.getInt("clear_change_chance");
+        weatherConfiguration.rainChangeChance = config.getInt("rain_change_chance");
+        weatherConfiguration.thunderChangeChance = config.getInt("thunder_change_chance");
+        weatherConfiguration.clearToRainChance = config.getInt("clear_to_rain_chance");
+        weatherConfiguration.clearToThunderChance = config.getInt("clear_to_thunder_chance");
+        weatherConfiguration.rainToClearChance = config.getInt("rain_to_clear_chance");
+        weatherConfiguration.rainToThunderChance = config.getInt("rain_to_thunder_chance");
+        weatherConfiguration.thunderToClearChance = config.getInt("thunder_to_clear_chance");
+        weatherConfiguration.thunderToRainChance = config.getInt("thunder_to_rain_chance");
     }
 }

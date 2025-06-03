@@ -13,16 +13,14 @@ public final class WeatherManager extends JavaPlugin {
     // ANSI Color Codes
     private final Logger log = getLogger();
     private final String reset = "\u001B[0m";
-    private final String cyan = "\u001B[36m";
     private final String brightGreen = "\u001B[92m";
-    private final String yellow = "\u001B[33m";
 
 
     @Override
     public void onEnable() {
-        PrintTitle();
-        LoadConfig();
-        InstanceClasses();
+        printTitle();
+        loadConfig();
+        instanceClasses();
         core.systemStart();
         log.info(brightGreen + "Plugin Startup Done" + reset);
     }
@@ -31,7 +29,7 @@ public final class WeatherManager extends JavaPlugin {
     public void onDisable() {
     }
 
-    private void LoadConfig(){
+    private void loadConfig(){
         if (!getDataFolder().exists()) {
             getDataFolder().mkdirs();
         }
@@ -41,15 +39,18 @@ public final class WeatherManager extends JavaPlugin {
         }
         log.info(brightGreen + "× Config File Loaded"+reset);
     }
-    private void InstanceClasses(){
-        InstanceCore();
+    private void instanceClasses(){
+        instanceCore();
         log.info(brightGreen + "× Classes instance Enabled"+reset);
 
     }
-    private void InstanceCore() {
+    private void instanceCore() {
         core = new Core(this, configFile);
     }
-    private void PrintTitle(){
+    private void printTitle(){
+        String cyan = "\u001B[36m";
+        String yellow = "\u001B[33m";
+
         log.info(
    "\n"+ brightGreen + " __        __         _   _               " + cyan + "  __  __                                   "+
         "\n"+ brightGreen + " \\ \\      / /__  __ _| |_| |__   ___ _ __ " + cyan + " |  \\/  | __ _ _ __   __ _  __ _  ___ _ __ "+
