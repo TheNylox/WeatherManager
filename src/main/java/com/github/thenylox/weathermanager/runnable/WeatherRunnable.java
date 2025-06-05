@@ -1,13 +1,13 @@
-package com.thenylox.weatherManager.Runnable;
+package com.github.thenylox.weathermanager.runnable;
 
-import com.thenylox.weatherManager.Model.Enum.WeatherStatus;
-import com.thenylox.weatherManager.Model.WeatherConfiguration;
-import com.thenylox.weatherManager.WeatherManager;
+import com.github.thenylox.weathermanager.model.enums.WeatherStatus;
+import com.github.thenylox.weathermanager.model.WeatherConfiguration;
+import com.github.thenylox.weathermanager.WeatherManager;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
-import static com.thenylox.weatherManager.Model.Enum.WeatherStatus.*;
+import static com.github.thenylox.weathermanager.model.enums.WeatherStatus.*;
 
 public class WeatherRunnable implements Runnable {
     private final WeatherConfiguration weatherConfiguration;

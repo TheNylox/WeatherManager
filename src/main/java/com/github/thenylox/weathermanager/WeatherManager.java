@@ -1,6 +1,5 @@
-package com.thenylox.weatherManager;
+package com.github.thenylox.weathermanager;
 
-import com.thenylox.weatherManager.Core;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -13,7 +12,7 @@ public final class WeatherManager extends JavaPlugin {
 
     // ANSI Color Codes
     private final Logger log = getLogger();
-    private final String reset = "\u001B[0m";
+    private static final String reset = "\u001B[0m";
     private final String brightGreen = "\u001B[92m";
 
 

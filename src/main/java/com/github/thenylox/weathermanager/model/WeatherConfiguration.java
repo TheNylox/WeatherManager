@@ -1,6 +1,6 @@
-package com.thenylox.weatherManager.Model;
+package com.github.thenylox.weathermanager.model;
 
-import com.thenylox.weatherManager.Model.Enum.WeatherStatus;
+import com.github.thenylox.weathermanager.model.enums.WeatherStatus;
 import org.bukkit.World;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.thenylox.weatherManager.Model.Enum;
+package com.github.thenylox.weathermanager.model.enums;
 
 public enum WeatherStatus {
     CLEAR,
