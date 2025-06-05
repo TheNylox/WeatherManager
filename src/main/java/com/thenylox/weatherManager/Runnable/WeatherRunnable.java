@@ -3,100 +3,81 @@ package com.thenylox.weatherManager.Runnable;
 import com.thenylox.weatherManager.Model.Enum.WeatherStatus;
 import com.thenylox.weatherManager.Model.WeatherConfiguration;
 import com.thenylox.weatherManager.WeatherManager;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import static com.thenylox.weatherManager.Model.Enum.WeatherStatus.*;
 
 public class WeatherRunnable implements Runnable {
-    private final WeatherConfiguration WEATHER_CONFIGURATION;
-    private final WeatherManager PLUGIN;
+    private final WeatherConfiguration weatherConfiguration;
+    private final WeatherManager plugin;
 
-    public WeatherRunnable(WeatherConfiguration weatherConfiguration, WeatherManager PLUGIN) {
-        this.WEATHER_CONFIGURATION = weatherConfiguration;
-        this.PLUGIN = PLUGIN;
+    public WeatherRunnable(WeatherConfiguration weatherConfiguration, WeatherManager plugin) {
+        this.weatherConfiguration = weatherConfiguration;
+        this.plugin = plugin;
     }
 
     @Override
     public void run() {
-        if(ChangeWeatherRoll(WEATHER_CONFIGURATION.WeatherStatus)){
-            ChangeWeatherToRoll(WEATHER_CONFIGURATION.WeatherStatus);
+        if(changeWeatherRoll(weatherConfiguration.weatherStatus)){
+            changeWeatherToRoll(weatherConfiguration.weatherStatus);
+        }
+    }
+
+    private boolean changeWeatherRoll(WeatherStatus weatherStatus) {
+        int random = (int) (Math.random() * 100);
+
+        return switch (weatherStatus) {
+            case CLEAR -> random <= weatherConfiguration.clearChangeChance;
+            case RAIN -> random <= weatherConfiguration.rainChangeChance;
+            case THUNDER -> random <= weatherConfiguration.thunderChangeChance;
         };
     }
 
-    private boolean ChangeWeatherRoll(WeatherStatus weatherStatus) {
+    private void changeWeatherToRoll(WeatherStatus weatherStatus){
         int random = (int) (Math.random() * 100);
 
-        switch(weatherStatus){
-            case CLEAR:
-                return random <= WEATHER_CONFIGURATION.ClearChangeChance ? true : false;
-            case RAIN:
-                return random <= WEATHER_CONFIGURATION.RainChangeChance ? true : false;
-            case THUNDER:
-                return random <= WEATHER_CONFIGURATION.ThunderChangeChance ? true : false;
-            default:
-                return false;
-        }
+        WeatherStatus changeTo = switch (weatherStatus) {
+            case CLEAR -> random <= weatherConfiguration.clearToRainChance ? RAIN : THUNDER;
+            case RAIN -> random <= weatherConfiguration.rainToClearChance ? CLEAR : THUNDER;
+            case THUNDER -> random <= weatherConfiguration.thunderToClearChance ? CLEAR : RAIN;
+        };
+        changeWeather(changeTo);
     }
 
-    private void ChangeWeatherToRoll(WeatherStatus weatherStatus){
-        WeatherStatus changeTo = null;
-        int random = (int) (Math.random() * 100);
+    private void changeWeather(WeatherStatus type) {
+        record WeatherState(boolean thundering, boolean storm) {}
+        weatherConfiguration.weatherStatus = type;
 
-        switch(weatherStatus){
-            case CLEAR:
-                changeTo = random <= WEATHER_CONFIGURATION.ClearToRainChance ? RAIN : THUNDER;
-                break;
-            case RAIN:
-                changeTo = random <= WEATHER_CONFIGURATION.RainToClearChance ? CLEAR : THUNDER;
-                break;
-            case THUNDER:
-                changeTo = random <= WEATHER_CONFIGURATION.ThunderToClearChance ? CLEAR : RAIN;
-                break;
-        }
-        ChangeWeather(changeTo);
-    }
+        WeatherState state = switch (type) {
+            case CLEAR   -> new WeatherState(false, false);
+            case RAIN    -> new WeatherState(false, true);
+            case THUNDER -> new WeatherState(true, true);
+        };
 
-    private void ChangeWeather(WeatherStatus type) {
-        boolean setThundering = false;
-        boolean setStorm = false;
-        WEATHER_CONFIGURATION.WeatherStatus = type;
+        final boolean setThunderingFinal = state.thundering();
+        final boolean setStormFinal = state.storm();
 
-        switch (type) {
-            case CLEAR:
-                setThundering = false;
-                setStorm = false;
-                break;
-
-            case RAIN:
-                setThundering = false;
-                setStorm = true;
-                break;
-
-            case THUNDER:
-                setThundering = true;
-                setStorm = true;
-                break;
-        }
-
-        final boolean setThunderingFinal = setThundering;
-        final boolean setStormFinal = setStorm;
 
         //Apply to all worlds
-        Bukkit.getScheduler().runTask(PLUGIN, () -> {
-            for (World WORLD : WEATHER_CONFIGURATION.Worlds) {
-                WORLD.setThundering(setThunderingFinal);
-                WORLD.setStorm(setStormFinal);
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            for (World world : weatherConfiguration.worlds) {
+                world.setThundering(setThunderingFinal);
+                world.setStorm(setStormFinal);
             }
         });
 
-        if (WEATHER_CONFIGURATION.IsBroadcastEnabled) {
-            SendWeatherChangeBroadcast();
+        if (weatherConfiguration.isBroadcastEnabled) {
+            sendWeatherChangeBroadcast();
         }
     }
 
-    private void SendWeatherChangeBroadcast() {
-        Bukkit.broadcastMessage(WEATHER_CONFIGURATION.BroadcastMessage.replace("%weather%",WEATHER_CONFIGURATION.WeatherStatus.toString().toLowerCase()));
+    private void sendWeatherChangeBroadcast() {
+        String message = weatherConfiguration.broadcastMessage
+                .replace("%weather%", weatherConfiguration.weatherStatus.toString().toLowerCase());
+        Component component = Component.text(message);
+        Bukkit.broadcast(component);
     }
 }
 

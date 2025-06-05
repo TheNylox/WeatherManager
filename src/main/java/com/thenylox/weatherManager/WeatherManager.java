@@ -1,5 +1,6 @@
 package com.thenylox.weatherManager;
 
+import com.thenylox.weatherManager.Core;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
